@@ -1,0 +1,3414 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maktab EDU SAAS - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    /* ========================================
+   ROOT & GLOBAL STYLES
+   ======================================== */
+:root {
+  --primary: #6C63FF;
+  --secondary: #FF6584;
+  --success: #36D1DC;
+  --info: #FFA62E;
+  --warning: #FF9A8B;
+  --danger: #FF3860;
+  --light: #F8F9FA;
+  --dark: #2D3748;
+  --gray: #718096;
+  --sidebar-width: 260px;
+  --header-height: 70px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --sky-light: #e0f2fe;
+  --sky-hover: #bae6fd;
+  --sky-border: #38bdf8;
+  --sky-text: #0369a1;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+  color: var(--dark);
+  display: flex;
+  min-height: 100vh;
+  transition: var(--transition);
+  line-height: 1.6;
+}
+
+/* ========================================
+   SIDEBAR – OQ + SCROLLBARSIZ + OCH KO‘K HOVER
+   ======================================== */
+.sidebar {
+  width: var(--sidebar-width);
+  background: #ffffff;
+  color: #2d3748;
+  height: 100vh;
+  position: fixed;
+  overflow-y: auto;
+  transition: var(--transition);
+  z-index: 1000;
+  box-shadow: var(--shadow-lg);
+  border-right: 1px solid #e2e8f0;
+}
+
+/* SCROLLBARSIZ */
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.sidebar-header {
+  padding: 30px 20px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8f9fa;
+}
+
+.sidebar-header h2 {
+  color: #1a202c;
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.5px;
+}
+
+.sidebar-header p {
+  color: #718096;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.sidebar-menu {
+  padding: 20px 0;
+}
+
+.menu-item {
+  padding: 14px 22px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition);
+  border-left: 4px solid transparent;
+  margin: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  color: #4a5568;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--sky-light);
+  opacity: 0;
+  transition: var(--transition);
+  border-radius: var(--radius-sm);
+}
+
+.menu-item:hover::before,
+.menu-item.active::before {
+  opacity: 1;
+}
+
+.menu-item:hover {
+  background: var(--sky-light);
+  color: var(--sky-text);
+  border-left-color: var(--sk--sky-border);
+  transform: translateX(4px);
+}
+
+.menu-item.active {
+  background: var(--sky-hover);
+  color: var(--sky-text);
+  border-left-color: #0ea5e9;
+  font-weight: 600;
+}
+
+.menu-item i {
+  margin-right: 14px;
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+  color: #718096;
+  transition: var(--transition);
+}
+
+.menu-item:hover i,
+.menu-item.active i {
+  color: var(--sky-text);
+  transform: scale(1.1);
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  transition: var(--transition);
+}
+
+.header {
+  height: var(--header-height);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+}
+
+.toggle-sidebar {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--gray);
+  cursor: pointer;
+  margin-right: 20px;
+  display: none;
+  padding: 8px;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+
+.toggle-sidebar:hover {
+  background: rgba(108, 99, 255, 0.1);
+  color: var(--primary);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.user-profile:hover {
+  background: rgba(108, 99, 255, 0.08);
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #5A52E0);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(108, 99, 255, 0.3);
+}
+
+.content {
+  padding: 30px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-title {
+  margin-bottom: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title h1 {
+  font-size: 1.9rem;
+  color: var(--dark);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* ========================================
+   CARDS & STATS
+   ======================================== */
+.card, .stat-card, .chart-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 25px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  transition: var(--transition);
+}
+
+.card:hover, .stat-card:hover, .chart-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(108, 99, 255, 0.2);
+}
+
+.card-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(247, 250, 252, 0.6);
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.card-body {
+  padding: 28px;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 22px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--info));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.stat-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 18px;
+  font-size: 1.6rem;
+  color: white;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, var(--primary), #5A52E0);
+}
+
+.stat-icon.success { background: linear-gradient(135deg, var(--success), #20b2aa); }
+.stat-icon.warning { background: linear-gradient(135deg, var(--warning), #ff7a6e); }
+.stat-icon.danger { background: linear-gradient(135deg, var(--danger), #e63946); }
+
+.stat-info h3 {
+  font-size: 2rem;
+  margin-bottom: 6px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.stat-info p {
+  color: var(--gray);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+.btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-size: 0.95rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn i {
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+}
+
+.btn:hover i {
+  transform: translateX(2px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #5A52E0);
+  color: white;
+  box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(108, 99, 255, 0.4);
+}
+
+/* ========================================
+   TABLE
+   ======================================== */
+.table-responsive {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  box-shadow: var(--shadow-sm);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 16px 18px;
+}
+
+td {
+  padding: 16px 18px;
+  transition: var(--transition);
+}
+
+tr:hover {
+  background: linear-gradient(90deg, rgba(108, 99, 255, 0.05), rgba(255, 166, 46, 0.05));
+}
+
+/* ========================================
+   BADGE & PROGRESS
+   ======================================== */
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.badge-success { background: rgba(54, 209, 220, 0.15); color: #1d9aaa; }
+.badge-warning { background: rgba(255, 154, 139, 0.15); color: #e66a5a; }
+.badge-danger { background: rgba(255, 56, 96, 0.15); color: #e02a50; }
+
+.progress-bar {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--primary), var(--info));
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  padding: 60px 20px;
+  overflow: auto;
+}
+
+.modal-content {
+  background: white;
+  margin: 0 auto;
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  max-width: 600px;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1;
+  transition: var(--transition);
+}
+
+.close:hover {
+  color: var(--danger);
+  transform: scale(1.1);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 992px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  .toggle-sidebar {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-container, .chart-container {
+    grid-template-columns: 1fr;
+  }
+  .content, .header {
+    padding: 15px;
+  }
+  .page-title h1 {
+    font-size: 1.6rem;
+  }
+}
+</style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Maktab EDU</h2>
+            <p>Boshqaruv paneli</p>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-item active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Boshqaruv paneli</span>
+            </div>
+            <div class="menu-item" data-page="users">
+                <i class="fas fa-users"></i>
+                <span>Foydalanuvchilar</span>
+            </div>
+            <div class="menu-item" data-page="schools">
+                <i class="fas fa-school"></i>
+                <span>Maktab ma'lumotlari</span>
+            </div>
+            <div class="menu-item" data-page="admission">
+                <i class="fas fa-file-signature"></i>
+                <span>Qabul va ro'yxatdan o'tish</span>
+            </div>
+            <div class="menu-item" data-page="notifications">
+                <i class="fas fa-bell"></i>
+                <span>Xabarnomalar</span>
+            </div>
+            <div class="menu-item" data-page="accounting">
+                <i class="fas fa-calculator"></i>
+                <span>Buxgalteriya</span>
+            </div>
+            <div class="menu-item" data-page="billing">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>Shartnoma va to'lovlar</span>
+            </div>
+            <div class="menu-item" data-page="hr">
+                <i class="fas fa-user-tie"></i>
+                <span>Kadrlar boshqaruvi</span>
+            </div>
+            <div class="menu-item" data-page="lms">
+                <i class="fas fa-book-open"></i>
+                <span>Dars jarayoni (LMS)</span>
+            </div>
+            <div class="menu-item" data-page="exams">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Imtihonlar</span>
+            </div>
+            <div class="menu-item" data-page="courses">
+                <i class="fas fa-chalkboard"></i>
+                <span>To'garaklar va kurslar</span>
+            </div>
+            <div class="menu-item" data-page="parents">
+                <i class="fas fa-user-friends"></i>
+                <span>Ota-onalar bilan aloqa</span>
+            </div>
+            <div class="menu-item" data-page="settings">
+                <i class="fas fa-cogs"></i>
+                <span>Sozlamalar</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <button class="toggle-sidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h3 id="currentPageTitle">Boshqaruv paneli</h3>
+            </div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <div class="user-avatar">A</div>
+                    <div>
+                        <div>Admin User</div>
+                        <small>Superadmin</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage" class="page-content active">
+                <div class="page-title">
+                    <h1>Boshqaruv paneli</h1>
+                    <div>
+                        <button class="btn btn-primary" id="generateReport">
+                            <i class="fas fa-download"></i> Hisobot yuklab olish
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudents">0</h3>
+                            <p>Jami o'quvchilar</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%; background-color: var(--primary);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalTeachers">0</h3>
+                            <p>Jami o'qituvchilar</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%; background-color: var(--success);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--info);">
+                            <i class="fas fa-school"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalSchools">1</h3>
+                            <p>Maktablar</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%; background-color: var(--info);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalPayments">0</h3>
+                            <p>To'lovlar (oylik)</p>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%; background-color: var(--warning);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="chart-container">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">O'quvchilar statistikasi</div>
+                            <select id="chartRange" class="form-control" style="width: auto;">
+                                <option value="week">Haftalik</option>
+                                <option value="month" selected>Oylik</option>
+                                <option value="year">Yillik</option>
+                            </select>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="studentsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">To'lovlar statistikasi</div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="paymentsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity and Calendar -->
+                <div class="chart-container">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">So'nggi faollik</div>
+                            <button class="btn btn-primary" id="refreshActivity">
+                                <i class="fas fa-sync-alt"></i> Yangilash
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Foydalanuvchi</th>
+                                            <th>Harakat</th>
+                                            <th>Vaqt</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activityTable">
+                                        <!-- Activity data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Kalendar</div>
+                            <div>
+                                <button class="btn" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                                <button class="btn" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="calendar" id="calendar">
+                                <!-- Calendar will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Lessons and Notifications -->
+                <div class="chart-container">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Bugungi darslar</div>
+                            <button class="btn btn-primary" id="viewAllLessons">
+                                <i class="fas fa-list"></i> Barchasini ko'rish
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Vaqt</th>
+                                            <th>Fan</th>
+                                            <th>O'qituvchi</th>
+                                            <th>Sinf</th>
+                                            <th>Xona</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lessonsTable">
+                                        <!-- Lessons data will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">So'nggi xabarnomalar</div>
+                            <button class="btn btn-primary" id="viewAllNotifications">
+                                <i class="fas fa-bell"></i> Barchasi
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="notificationsList">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Page -->
+            <div id="usersPage" class="page-content">
+                <div class="page-title">
+                    <h1>Foydalanuvchi Boshqaruvi</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addUserBtn">
+                            <i class="fas fa-plus"></i> Yangi foydalanuvchi
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeUsers">0</h3>
+                            <p>Faol foydalanuvchilar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="teacherUsers">0</h3>
+                            <p>O'qituvchilar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--info);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="studentUsers">0</h3>
+                            <p>O'quvchilar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="parentUsers">0</h3>
+                            <p>Ota-onalar</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Barcha foydalanuvchilar</h3>
+                        <div>
+                            <input type="text" class="form-control" placeholder="Qidirish..." id="userSearch">
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ism</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Status</th>
+                                        <th>Ro'yxatdan o'tgan sana</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTable">
+                                    <!-- Users data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schools Page -->
+            <div id="schoolsPage" class="page-content">
+                <div class="page-title">
+                    <h1>Maktab Ma'lumotlari</h1>
+                    <div>
+                        <button class="btn btn-primary" id="editSchoolBtn">
+                            <i class="fas fa-edit"></i> Tahrirlash
+                        </button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3>Asosiy ma'lumotlar</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Maktab nomi</label>
+                                <p id="schoolName" class="form-control" style="background-color: #f8f9fa;">Akademik Litsey</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Manzil</label>
+                                <p id="schoolAddress" class="form-control" style="background-color: #f8f9fa;">Toshkent shahar, Yunusobod tumani</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Telefon</label>
+                                <p id="schoolPhone" class="form-control" style="background-color: #f8f9fa;">+998 71 123 45 67</p>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <p id="schoolEmail" class="form-control" style="background-color: #f8f9fa;">info@akademik-litsey.uz</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="card-header">
+                            <h3>Maktab statistikasi</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="stat-card" style="box-shadow: none; margin-bottom: 15px;">
+                                <div class="stat-icon" style="background-color: var(--primary); width: 50px; height: 50px;">
+                                    <i class="fas fa-door-open"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>24</h3>
+                                    <p>Sinflar</p>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="box-shadow: none; margin-bottom: 15px;">
+                                <div class="stat-icon" style="background-color: var(--success); width: 50px; height: 50px;">
+                                    <i class="fas fa-desktop"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>3</h3>
+                                    <p>Kompyuter xonalari</p>
+                                </div>
+                            </div>
+                            <div class="stat-card" style="box-shadow: none; margin-bottom: 15px;">
+                                <div class="stat-icon" style="background-color: var(--info); width: 50px; height: 50px;">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3>12,540</h3>
+                                    <p>Kitoblar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admission Page -->
+            <div id="admissionPage" class="page-content">
+                <div class="page-title">
+                    <h1>Qabul va Ro'yxatdan O'tish</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addAdmissionBtn">
+                            <i class="fas fa-plus"></i> Yangi ariza
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="newAdmissions">0</h3>
+                            <p>Yangi arizalar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="acceptedAdmissions">0</h3>
+                            <p>Qabul qilingan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingAdmissions">0</h3>
+                            <p>Ko'rib chiqilmoqda</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--danger);">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="rejectedAdmissions">0</h3>
+                            <p>Rad etilgan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>So'nggi arizalar</h3>
+                        <div>
+                            <select id="admissionFilter" class="form-control" style="width: auto;">
+                                <option value="all">Barchasi</option>
+                                <option value="new">Yangi</option>
+                                <option value="accepted">Qabul qilingan</option>
+                                <option value="pending">Ko'rib chiqilmoqda</option>
+                                <option value="rejected">Rad etilgan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>O'quvchi ismi</th>
+                                        <th>Vasiy</th>
+                                        <th>Telefon</th>
+                                        <th>Sinf</th>
+                                        <th>Status</th>
+                                        <th>Sana</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admissionsTable">
+                                    <!-- Admissions data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Page -->
+            <div id="notificationsPage" class="page-content">
+                <div class="page-title">
+                    <h1>Xabarnomalar</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addNotificationBtn">
+                            <i class="fas fa-plus"></i> Yangi xabar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalNotifications">0</h3>
+                            <p>Jami xabarnomalar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="sentNotifications">0</h3>
+                            <p>Yuborilgan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingNotifications">0</h3>
+                            <p>Kutilayotgan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Barcha xabarnomalar</h3>
+                        <input type="text" class="form-control" placeholder="Qidirish..." id="notificationSearch">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Sarlavha</th>
+                                        <th>Xabar</th>
+                                        <th>Yuboruvchi</th>
+                                        <th>Sana</th>
+                                        <th>Status</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="notificationsTable">
+                                    <!-- Notifications data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounting Page -->
+            <div id="accountingPage" class="page-content">
+                <div class="page-title">
+                    <h1>Buxgalteriya</h1>
+                    <div>
+                        <button class="btn btn-primary" id="generateAccountingReport">
+                            <i class="fas fa-download"></i> Hisobot
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalIncome">0</h3>
+                            <p>Jami daromad</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--danger);">
+                            <i class="fas fa-chart-area"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalExpenses">0</h3>
+                            <p>Jami xarajatlar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="balance">0</h3>
+                            <p>Balans</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Daromad va xarajatlar</div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="accountingChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>So'nggi operatsiyalar</h3>
+                        <button class="btn btn-primary" id="addTransactionBtn">
+                            <i class="fas fa-plus"></i> Yangi operatsiya
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Turi</th>
+                                        <th>Summa</th>
+                                        <th>Tavsif</th>
+                                        <th>Sana</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTable">
+                                    <!-- Transactions data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Page -->
+            <div id="billingPage" class="page-content">
+                <div class="page-title">
+                    <h1>Shartnoma va To'lovlar</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addBillingBtn">
+                            <i class="fas fa-plus"></i> Yangi shartnoma
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalContracts">0</h3>
+                            <p>Jami shartnomalar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-money-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="paidBills">0</h3>
+                            <p>To'langan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="overdueBills">0</h3>
+                            <p>Muddati o'tgan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Barcha to'lovlar</h3>
+                        <input type="text" class="form-control" placeholder="Qidirish..." id="billingSearch">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>O'quvchi</th>
+                                        <th>Summa</th>
+                                        <th>Muddati</th>
+                                        <th>Status</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billingTable">
+                                    <!-- Billing data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HR Page -->
+            <div id="hrPage" class="page-content">
+                <div class="page-title">
+                    <h1>Kadrlar Boshqaruvi</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addEmployeeBtn">
+                            <i class="fas fa-plus"></i> Yangi xodim
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalEmployees">0</h3>
+                            <p>Jami xodimlar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeEmployees">0</h3>
+                            <p>Faol xodimlar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="onLeaveEmployees">0</h3>
+                            <p>Ta'tilda</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Barcha xodimlar</h3>
+                        <input type="text" class="form-control" placeholder="Qidirish..." id="hrSearch">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ism</th>
+                                        <th>Lavozim</th>
+                                        <th>Telefon</th>
+                                        <th>Status</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="employeesTable">
+                                    <!-- Employees data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LMS Page -->
+            <div id="lmsPage" class="page-content">
+                <div class="page-title">
+                    <h1>Dars Jarayoni (LMS)</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addLessonBtn">
+                            <i class="fas fa-plus"></i> Yangi dars
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-book-reader"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalLessons">0</h3>
+                            <p>Jami darslar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="onlineLessons">0</h3>
+                            <p>Onlayn darslar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--info);">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="assignments">0</h3>
+                            <p>Vazifalar</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Bugungi darslar jadvali</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Vaqt</th>
+                                        <th>Fan</th>
+                                        <th>O'qituvchi</th>
+                                        <th>Sinf</th>
+                                        <th>Turi</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lmsTable">
+                                    <!-- LMS data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exams Page -->
+            <div id="examsPage" class="page-content">
+                <div class="page-title">
+                    <h1>Imtihonlar</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addExamBtn">
+                            <i class="fas fa-plus"></i> Yangi imtihon
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalExams">0</h3>
+                            <p>Jami imtihonlar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="completedExams">0</h3>
+                            <p>Tugatilgan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="upcomingExams">0</h3>
+                            <p>Kutilayotgan</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Barcha imtihonlar</h3>
+                        <input type="text" class="form-control" placeholder="Qidirish..." id="examSearch">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Fan</th>
+                                        <th>Sana</th>
+                                        <th>Sinf</th>
+                                        <th>Status</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="examsTable">
+                                    <!-- Exams data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Courses Page -->
+            <div id="coursesPage" class="page-content">
+                <div class="page-title">
+                    <h1>To'garaklar va Kurslar</h1>
+                    <div>
+                        <button class="btn btn-primary" id="addCourseBtn">
+                            <i class="fas fa-plus"></i> Yangi kurs
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCourses">0</h3>
+                            <p>Jami kurslar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="enrolledStudents">0</h3>
+                            <p>Ro'yxatdan o'tgan o'quvchilar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--info);">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="courseTeachers">0</h3>
+                            <p>Kurs o'qituvchilari</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Barcha kurslar</h3>
+                        <input type="text" class="form-control" placeholder="Qidirish..." id="courseSearch">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nomi</th>
+                                        <th>O'qituvchi</th>
+                                        <th>O'quvchilar soni</th>
+                                        <th>Status</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="coursesTable">
+                                    <!-- Courses data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parents Page -->
+            <div id="parentsPage" class="page-content">
+                <div class="page-title">
+                    <h1>Ota-onalar bilan Aloqa</h1>
+                    <div>
+                        <button class="btn btn-primary" id="sendMessageBtn">
+                            <i class="fas fa-envelope"></i> Xabar yuborish
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--primary);">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalParents">0</h3>
+                            <p>Jami ota-onalar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--success);">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="messagesSent">0</h3>
+                            <p>Yuborilgan xabarlar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background-color: var(--warning);">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="unreadMessages">0</h3>
+                            <p>O'qilmagan xabarlar</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Ota-onalar ro'yxati</h3>
+                        <input type="text" class="form-control" placeholder="Qidirish..." id="parentsSearch">
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ism</th>
+                                        <th>O'quvchi</th>
+                                        <th>Telefon</th>
+                                        <th>Email</th>
+                                        <th>Harakatlar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="parentsTable">
+                                    <!-- Parents data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="page-content">
+                <div class="page-title">
+                    <h1>Sozlamalar</h1>
+                    <div>
+                        <button class="btn btn-primary" id="saveSettingsBtn">
+                            <i class="fas fa-save"></i> Saqlash
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Umumiy sozlamalar</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Tizim nomi</label>
+                            <input type="text" class="form-control" id="systemName" value="Maktab EDU SAAS">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Til</label>
+                            <select class="form-control" id="language">
+                                <option value="uz">O'zbek</option>
+                                <option value="ru">Rus</option>
+                                <option value="en">Ingliz</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Vaqt zonasi</label>
+                            <input type="text" class="form-control" id="timezone" value="Asia/Tashkent">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Parol sozlamalari</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Yangi parol</label>
+                            <input type="password" class="form-control" id="newPassword">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Parolni tasdiqlash</label>
+                            <input type="password" class="form-control" id="confirmPassword">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- User Add Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addUserModal')">&times;</span>
+            <h2>Yangi foydalanuvchi qo'shish</h2>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label>Ism</label>
+                    <input type="text" class="form-control" id="userName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <select class="form-control" id="userRole" required>
+                        <option value="admin">Admin</option>
+                        <option value="teacher">O'qituvchi</option>
+                        <option value="student">O'quvchi</option>
+                        <option value="parent">Ota-ona</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Parol</label>
+                    <input type="password" class="form-control" id="userPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admission Add Modal -->
+    <div id="addAdmissionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addAdmissionModal')">&times;</span>
+            <h2>Yangi ariza qo'shish</h2>
+            <form id="addAdmissionForm">
+                <div class="form-group">
+                    <label>O'quvchi ismi</label>
+                    <input type="text" class="form-control" id="admissionStudentName" required>
+                </div>
+                <div class="form-group">
+                    <label>Vasiy</label>
+                    <input type="text" class="form-control" id="admissionGuardian" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" class="form-control" id="admissionPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Sinf</label>
+                    <input type="text" class="form-control" id="admissionClass" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Add Modal -->
+    <div id="addNotificationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addNotificationModal')">&times;</span>
+            <h2>Yangi xabarnoma qo'shish</h2>
+            <form id="addNotificationForm">
+                <div class="form-group">
+                    <label>Sarlavha</label>
+                    <input type="text" class="form-control" id="notificationTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Xabar</label>
+                    <textarea class="form-control" id="notificationMessage" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Turi</label>
+                    <select class="form-control" id="notificationType" required>
+                        <option value="payment">To'lov</option>
+                        <option value="attendance">Yo'qlama</option>
+                        <option value="exam">Imtihon</option>
+                        <option value="event">Tadbir</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Yuborish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction Add Modal -->
+    <div id="addTransactionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addTransactionModal')">&times;</span>
+            <h2>Yangi operatsiya qo'shish</h2>
+            <form id="addTransactionForm">
+                <div class="form-group">
+                    <label>Turi</label>
+                    <select class="form-control" id="transactionType" required>
+                        <option value="income">Daromad</option>
+                        <option value="expense">Xarajat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Summa</label>
+                    <input type="number" class="form-control" id="transactionAmount" required>
+                </div>
+                <div class="form-group">
+                    <label>Tavsif</label>
+                    <input type="text" class="form-control" id="transactionDescription" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Billing Add Modal -->
+    <div id="addBillingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addBillingModal')">&times;</span>
+            <h2>Yangi shartnoma qo'shish</h2>
+            <form id="addBillingForm">
+                <div class="form-group">
+                    <label>O'quvchi</label>
+                    <input type="text" class="form-control" id="billingStudent" required>
+                </div>
+                <div class="form-group">
+                    <label>Summa</label>
+                    <input type="number" class="form-control" id="billingAmount" required>
+                </div>
+                <div class="form-group">
+                    <label>Muddati</label>
+                    <input type="date" class="form-control" id="billingDueDate" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Add Modal -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addEmployeeModal')">&times;</span>
+            <h2>Yangi xodim qo'shish</h2>
+            <form id="addEmployeeForm">
+                <div class="form-group">
+                    <label>Ism</label>
+                    <input type="text" class="form-control" id="employeeName" required>
+                </div>
+                <div class="form-group">
+                    <label>Lavozim</label>
+                    <input type="text" class="form-control" id="employeePosition" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" class="form-control" id="employeePhone" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lesson Add Modal -->
+    <div id="addLessonModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addLessonModal')">&times;</span>
+            <h2>Yangi dars qo'shish</h2>
+            <form id="addLessonForm">
+                <div class="form-group">
+                    <label>Vaqt</label>
+                    <input type="text" class="form-control" id="lessonTime" required>
+                </div>
+                <div class="form-group">
+                    <label>Fan</label>
+                    <input type="text" class="form-control" id="lessonSubject" required>
+                </div>
+                <div class="form-group">
+                    <label>O'qituvchi</label>
+                    <input type="text" class="form-control" id="lessonTeacher" required>
+                </div>
+                <div class="form-group">
+                    <label>Sinf</label>
+                    <input type="text" class="form-control" id="lessonClass" required>
+                </div>
+                <div class="form-group">
+                    <label>Turi</label>
+                    <select class="form-control" id="lessonType" required>
+                        <option value="offline">Offline</option>
+                        <option value="online">Online</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Exam Add Modal -->
+    <div id="addExamModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addExamModal')">&times;</span>
+            <h2>Yangi imtihon qo'shish</h2>
+            <form id="addExamForm">
+                <div class="form-group">
+                    <label>Fan</label>
+                    <input type="text" class="form-control" id="examSubject" required>
+                </div>
+                <div class="form-group">
+                    <label>Sana</label>
+                    <input type="date" class="form-control" id="examDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Sinf</label>
+                    <input type="text" class="form-control" id="examClass" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Course Add Modal -->
+    <div id="addCourseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addCourseModal')">&times;</span>
+            <h2>Yangi kurs qo'shish</h2>
+            <form id="addCourseForm">
+                <div class="form-group">
+                    <label>Nomi</label>
+                    <input type="text" class="form-control" id="courseName" required>
+                </div>
+                <div class="form-group">
+                    <label>O'qituvchi</label>
+                    <input type="text" class="form-control" id="courseTeacher" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Qo'shish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Send Message Modal -->
+    <div id="sendMessageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('sendMessageModal')">&times;</span>
+            <h2>Xabar yuborish</h2>
+            <form id="sendMessageForm">
+                <div class="form-group">
+                    <label>Qabul qiluvchi (ota-ona ID)</label>
+                    <input type="text" class="form-control" id="messageRecipient" required>
+                </div>
+                <div class="form-group">
+                    <label>Sarlavha</label>
+                    <input type="text" class="form-control" id="messageTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Xabar</label>
+                    <textarea class="form-control" id="messageContent" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Yuborish</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit School Modal -->
+    <div id="editSchoolModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editSchoolModal')">&times;</span>
+            <h2>Maktab ma'lumotlarini tahrirlash</h2>
+            <form id="editSchoolForm">
+                <div class="form-group">
+                    <label>Maktab nomi</label>
+                    <input type="text" class="form-control" id="editSchoolName" value="Akademik Litsey" required>
+                </div>
+                <div class="form-group">
+                    <label>Manzil</label>
+                    <input type="text" class="form-control" id="editSchoolAddress" value="Toshkent shahar, Yunusobod tumani" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" class="form-control" id="editSchoolPhone" value="+998 71 123 45 67" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" id="editSchoolEmail" value="info@akademik-litsey.uz" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Saqlash</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for all sections
+        const sampleData = {
+            users: [
+                { id: 1, name: "Admin User", email: "admin@maktab.edu", role: "admin", status: "active", registered: "2023-01-15" },
+                { id: 2, name: "Ali Valiyev", email: "ali@maktab.edu", role: "teacher", status: "active", registered: "2023-02-20" },
+                { id: 3, name: "Hasan Husanov", email: "hasan@maktab.edu", role: "student", status: "active", registered: "2023-03-10" },
+                { id: 4, name: "Otabek Otabekov", email: "otabek@maktab.edu", role: "parent", status: "active", registered: "2023-03-15" },
+                { id: 5, name: "Zarina Qodirova", email: "zarina@maktab.edu", role: "teacher", status: "inactive", registered: "2023-04-05" }
+            ],
+            students: [
+                { id: 1, name: "Hasan Husanov", class: "5-A", phone: "+998901234567", status: "active" },
+                { id: 2, name: "Dilshod Rajabov", class: "5-A", phone: "+998901234568", status: "active" },
+                { id: 3, name: "Shahzod Xolmatov", class: "6-B", phone: "+998901234569", status: "active" },
+                { id: 4, name: "Malika Qodirova", class: "7-A", phone: "+998901234570", status: "active" },
+                { id: 5, name: "Sardor Tursunov", class: "8-B", phone: "+998901234571", status: "active" }
+            ],
+            teachers: [
+                { id: 1, name: "Ali Valiyev", subject: "Matematika", phone: "+998901234570", status: "active" },
+                { id: 2, name: "Zarina Qodirova", subject: "Fizika", phone: "+998901234571", status: "active" },
+                { id: 3, name: "Dilfuza Raximova", subject: "Tarix", phone: "+998901234572", status: "active" }
+            ],
+            activities: [
+                { user: "Admin User", action: "Tizimga kirdi", time: "10:00", status: "success" },
+                { user: "Ali Valiyev", action: "Yangi dars qo'shdi", time: "09:45", status: "success" },
+                { user: "Hasan Husanov", action: "Baholarni ko'rdi", time: "09:30", status: "success" },
+                { user: "Otabek Otabekov", action: "To'lov amalga oshirdi", time: "09:15", status: "success" },
+                { user: "Zarina Qodirova", action: "Test natijalarini kiritdi", time: "09:00", status: "success" }
+            ],
+            lessons: [
+                { time: "08:00-08:45", subject: "Matematika", teacher: "Ali Valiyev", class: "5-A", room: "201", type: "offline" },
+                { time: "09:00-09:45", subject: "Fizika", teacher: "Zarina Qodirova", class: "6-B", room: "305", type: "online" },
+                { time: "10:00-10:45", subject: "Tarix", teacher: "Dilfuza Raximova", class: "7-A", room: "104", type: "offline" },
+                { time: "11:00-11:45", subject: "Matematika", teacher: "Ali Valiyev", class: "8-B", room: "201", type: "online" },
+                { time: "12:00-12:45", subject: "Fizika", teacher: "Zarina Qodirova", class: "9-A", room: "305", type: "offline" }
+            ],
+            notifications: [
+                { id: 1, title: "To'lov tasdiqlandi", message: "Hasan Husanovning to'lovi muvaffaqiyatli amalga oshirildi", time: "5 daqiqa oldin", type: "payment", sender: "Admin", status: "sent" },
+                { id: 2, title: "Yangi yo'qlama", message: "5-A sinf uchun yo'qlama kiritildi", time: "1 soat oldin", type: "attendance", sender: "Teacher", status: "sent" }
+            ],
+            payments: {
+                total: 12450000,
+                received: 9850000,
+                pending: 2600000
+            },
+            admissions: [
+                { id: "#00125", studentName: "Azizbek Olimov", guardian: "Olim Olimov", phone: "+998901234567", class: "5-A", status: "pending", date: "12.11.2023" },
+                { id: "#00124", studentName: "Sevinch Qodirova", guardian: "Ali Qodirov", phone: "+998901234568", class: "5-B", status: "accepted", date: "11.11.2023" },
+                { id: "#00123", studentName: "Bobur Mirzayev", guardian: "Mirza Mirzayev", phone: "+998901234569", class: "6-A", status: "rejected", date: "10.11.2023" }
+            ],
+            transactions: [
+                { id: 1, type: "income", amount: 5000000, description: "To'lov", date: "2023-11-01" },
+                { id: 2, type: "expense", amount: 2000000, description: "Xarajat", date: "2023-11-02" }
+            ],
+            billing: [
+                { id: 1, student: "Hasan Husanov", amount: 1000000, dueDate: "2023-12-01", status: "paid" },
+                { id: 2, student: "Dilshod Rajabov", amount: 1500000, dueDate: "2023-11-15", status: "overdue" }
+            ],
+            employees: [
+                { id: 1, name: "Ali Valiyev", position: "O'qituvchi", phone: "+998901234570", status: "active" },
+                { id: 2, name: "Zarina Qodirova", position: "O'qituvchi", phone: "+998901234571", status: "onleave" }
+            ],
+            exams: [
+                { id: 1, subject: "Matematika", date: "2023-12-15", class: "5-A", status: "upcoming" },
+                { id: 2, subject: "Fizika", date: "2023-11-10", class: "6-B", status: "completed" }
+            ],
+            courses: [
+                { id: 1, name: "Matematika to'garagi", teacher: "Ali Valiyev", students: 20, status: "active" },
+                { id: 2, name: "Fizika kursi", teacher: "Zarina Qodirova", students: 15, status: "active" }
+            ],
+            parents: [
+                { id: 1, name: "Otabek Otabekov", student: "Hasan Husanov", phone: "+998901234567", email: "otabek@maktab.edu" },
+                { id: 2, name: "Ali Qodirov", student: "Sevinch Qodirova", phone: "+998901234568", email: "ali@maktab.edu" }
+            ],
+            messages: [
+                { id: 1, recipient: 1, title: "Yo'qlama haqida", content: "Farzingiz darsga kelmadi", date: "2023-11-12", status: "unread" },
+                { id: 2, recipient: 2, title: "Imtihon natijalari", content: "Farzingiz yaxshi natija ko'rsatdi", date: "2023-11-11", status: "read" }
+            ],
+            schoolInfo: {
+                name: "Akademik Litsey",
+                address: "Toshkent shahar, Yunusobod tumani",
+                phone: "+998 71 123 45 67",
+                email: "info@akademik-litsey.uz"
+            },
+            settings: {
+                systemName: "Maktab EDU SAAS",
+                language: "uz",
+                timezone: "Asia/Tashkent"
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize sample data if not exists
+            initializeData();
+            
+            // Load dashboard data
+            loadDashboardData();
+            
+            // Initialize charts
+            initializeCharts();
+            
+            // Initialize calendar
+            initializeCalendar();
+
+            // Toggle sidebar on mobile
+            document.querySelector('.toggle-sidebar').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('show');
+            });
+
+            // Menu item click handlers
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+                    
+                    // Update active menu item
+                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Chart range change handler
+            document.getElementById('chartRange').addEventListener('change', function() {
+                updateCharts(this.value);
+            });
+
+            // Refresh activity handler
+            document.getElementById('refreshActivity').addEventListener('click', function() {
+                loadActivityData();
+            });
+
+            // Generate report handler
+            document.getElementById('generateReport').addEventListener('click', function() {
+                generateReport();
+            });
+
+            // Calendar navigation handlers
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                navigateCalendar(-1);
+            });
+
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                navigateCalendar(1);
+            });
+
+            // User search handler
+            document.getElementById('userSearch').addEventListener('input', function() {
+                loadUsersTable(this.value);
+            });
+
+            // Add user button handler
+            document.getElementById('addUserBtn').addEventListener('click', function() {
+                openModal('addUserModal');
+            });
+
+            // Add user form submit
+            document.getElementById('addUserForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addUser();
+            });
+
+            // Edit school button handler
+            document.getElementById('editSchoolBtn').addEventListener('click', function() {
+                openModal('editSchoolModal');
+            });
+
+            // Edit school form submit
+            document.getElementById('editSchoolForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                editSchool();
+            });
+
+            // Admission filter handler
+            document.getElementById('admissionFilter').addEventListener('change', function() {
+                loadAdmissionsTable(this.value);
+            });
+
+            // Add admission button handler
+            document.getElementById('addAdmissionBtn').addEventListener('click', function() {
+                openModal('addAdmissionModal');
+            });
+
+            // Add admission form submit
+            document.getElementById('addAdmissionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addAdmission();
+            });
+
+            // Notification search handler
+            document.getElementById('notificationSearch').addEventListener('input', function() {
+                loadNotificationsTable(this.value);
+            });
+
+            // Add notification button handler
+            document.getElementById('addNotificationBtn').addEventListener('click', function() {
+                openModal('addNotificationModal');
+            });
+
+            // Add notification form submit
+            document.getElementById('addNotificationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addNotification();
+            });
+
+            // Generate accounting report
+            document.getElementById('generateAccountingReport').addEventListener('click', function() {
+                generateAccountingReport();
+            });
+
+            // Add transaction button handler
+            document.getElementById('addTransactionBtn').addEventListener('click', function() {
+                openModal('addTransactionModal');
+            });
+
+            // Add transaction form submit
+            document.getElementById('addTransactionForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addTransaction();
+            });
+
+            // Billing search handler
+            document.getElementById('billingSearch').addEventListener('input', function() {
+                loadBillingTable(this.value);
+            });
+
+            // Add billing button handler
+            document.getElementById('addBillingBtn').addEventListener('click', function() {
+                openModal('addBillingModal');
+            });
+
+            // Add billing form submit
+            document.getElementById('addBillingForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addBilling();
+            });
+
+            // HR search handler
+            document.getElementById('hrSearch').addEventListener('input', function() {
+                loadEmployeesTable(this.value);
+            });
+
+            // Add employee button handler
+            document.getElementById('addEmployeeBtn').addEventListener('click', function() {
+                openModal('addEmployeeModal');
+            });
+
+            // Add employee form submit
+            document.getElementById('addEmployeeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addEmployee();
+            });
+
+            // Add lesson button handler
+            document.getElementById('addLessonBtn').addEventListener('click', function() {
+                openModal('addLessonModal');
+            });
+
+            // Add lesson form submit
+            document.getElementById('addLessonForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addLesson();
+            });
+
+            // Exam search handler
+            document.getElementById('examSearch').addEventListener('input', function() {
+                loadExamsTable(this.value);
+            });
+
+            // Add exam button handler
+            document.getElementById('addExamBtn').addEventListener('click', function() {
+                openModal('addExamModal');
+            });
+
+            // Add exam form submit
+            document.getElementById('addExamForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addExam();
+            });
+
+            // Course search handler
+            document.getElementById('courseSearch').addEventListener('input', function() {
+                loadCoursesTable(this.value);
+            });
+
+            // Add course button handler
+            document.getElementById('addCourseBtn').addEventListener('click', function() {
+                openModal('addCourseModal');
+            });
+
+            // Add course form submit
+            document.getElementById('addCourseForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addCourse();
+            });
+
+            // Parents search handler
+            document.getElementById('parentsSearch').addEventListener('input', function() {
+                loadParentsTable(this.value);
+            });
+
+            // Send message button handler
+            document.getElementById('sendMessageBtn').addEventListener('click', function() {
+                openModal('sendMessageModal');
+            });
+
+            // Send message form submit
+            document.getElementById('sendMessageForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                sendMessage();
+            });
+
+            // Save settings handler
+            document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+                saveSettings();
+            });
+        });
+
+        // Initialize sample data in localStorage
+        function initializeData() {
+            Object.keys(sampleData).forEach(key => {
+                if (!localStorage.getItem(key)) {
+                    localStorage.setItem(key, JSON.stringify(sampleData[key]));
+                }
+            });
+        }
+
+        // Load dashboard data
+        function loadDashboardData() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+            const payments = JSON.parse(localStorage.getItem('payments')) || sampleData.payments;
+            
+            // Update stats
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalTeachers').textContent = teachers.length;
+            document.getElementById('totalSchools').textContent = 1;
+            document.getElementById('totalPayments').textContent = formatCurrency(payments.total);
+            
+            // Load activity table
+            loadActivityData();
+            
+            // Load lessons table
+            loadLessonsData();
+            
+            // Load notifications
+            loadNotificationsData();
+        }
+
+        // Load activity data
+        function loadActivityData() {
+            const activities = JSON.parse(localStorage.getItem('activities')) || [];
+            
+            let activityHtml = '';
+            activities.forEach(activity => {
+                activityHtml += `
+                    <tr>
+                        <td>${activity.user}</td>
+                        <td>${activity.action}</td>
+                        <td>${activity.time}</td>
+                        <td><span class="badge badge-success">Muvaffaqiyatli</span></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('activityTable').innerHTML = activityHtml;
+        }
+
+        // Load lessons data
+        function loadLessonsData() {
+            const lessons = JSON.parse(localStorage.getItem('lessons')) || [];
+            
+            let lessonsHtml = '';
+            lessons.forEach(lesson => {
+                lessonsHtml += `
+                    <tr>
+                        <td>${lesson.time}</td>
+                        <td>${lesson.subject}</td>
+                        <td>${lesson.teacher}</td>
+                        <td>${lesson.class}</td>
+                        <td>${lesson.room}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('lessonsTable').innerHTML = lessonsHtml;
+        }
+
+        // Load notifications data
+        function loadNotificationsData() {
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            
+            let notificationsHtml = '';
+            notifications.forEach(notification => {
+                notificationsHtml += `
+                    <div class="notification-item">
+                        <div class="notification-icon" style="background-color: ${getNotificationColor(notification.type)};">
+                            <i class="fas ${getNotificationIcon(notification.type)}"></i>
+                        </div>
+                        <div class="notification-content">
+                            <div><strong>${notification.title}</strong></div>
+                            <div>${notification.message}</div>
+                            <div class="notification-time">${notification.time}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('notificationsList').innerHTML = notificationsHtml;
+        }
+
+        // Get notification color
+        function getNotificationColor(type) {
+            const colors = {
+                payment: 'var(--success)',
+                attendance: 'var(--info)',
+                exam: 'var(--warning)',
+                event: 'var(--primary)'
+            };
+            return colors[type] || 'var(--gray)';
+        }
+
+        // Get notification icon
+        function getNotificationIcon(type) {
+            const icons = {
+                payment: 'fa-money-bill-wave',
+                attendance: 'fa-clipboard-check',
+                exam: 'fa-chart-bar',
+                event: 'fa-calendar-alt'
+            };
+            return icons[type] || 'fa-bell';
+        }
+
+        // Load users data
+        function loadUsersData() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Update stats
+            document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'active').length;
+            document.getElementById('teacherUsers').textContent = users.filter(u => u.role === 'teacher').length;
+            document.getElementById('studentUsers').textContent = users.filter(u => u.role === 'student').length;
+            document.getElementById('parentUsers').textContent = users.filter(u => u.role === 'parent').length;
+            
+            // Load table
+            loadUsersTable();
+        }
+
+        // Load users table
+        function loadUsersTable(search = '') {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const filtered = users.filter(u => u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase()));
+            
+            let html = '';
+            filtered.forEach(u => {
+                html += `
+                    <tr>
+                        <td>${u.id}</td>
+                        <td>${u.name}</td>
+                        <td>${u.email}</td>
+                        <td>${u.role}</td>
+                        <td><span class="badge ${u.status === 'active' ? 'badge-success' : 'badge-danger'}">${u.status === 'active' ? 'Faol' : 'Faol emas'}</span></td>
+                        <td>${u.registered}</td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 5px 10px; margin-right: 5px;" onclick="editUser(${u.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('usersTable').innerHTML = html;
+        }
+
+        // Add user
+        function addUser() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const newUser = {
+                id: users.length ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                role: document.getElementById('userRole').value,
+                status: 'active',
+                registered: new Date().toISOString().split('T')[0]
+            };
+            // Parol saqlanmaydi, real tizimda hash bo'lishi kerak
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            closeModal('addUserModal');
+            loadUsersData();
+            addActivity(`${newUser.name} foydalanuvchi qo'shildi`);
+        }
+
+        // Edit user (simple alert for demo)
+        function editUser(id) {
+            alert(`Foydalanuvchi ID: ${id} tahrirlash. Real tizimda modal ochiladi.`);
+        }
+
+        // Delete user
+        function deleteUser(id) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                users = users.filter(u => u.id !== id);
+                localStorage.setItem('users', JSON.stringify(users));
+                loadUsersData();
+                addActivity(`Foydalanuvchi ID: ${id} o'chirildi`);
+            }
+        }
+
+        // Load school data
+        function loadSchoolData() {
+            const school = JSON.parse(localStorage.getItem('schoolInfo')) || sampleData.schoolInfo;
+            document.getElementById('schoolName').textContent = school.name;
+            document.getElementById('schoolAddress').textContent = school.address;
+            document.getElementById('schoolPhone').textContent = school.phone;
+            document.getElementById('schoolEmail').textContent = school.email;
+        }
+
+        // Edit school
+        function editSchool() {
+            const school = {
+                name: document.getElementById('editSchoolName').value,
+                address: document.getElementById('editSchoolAddress').value,
+                phone: document.getElementById('editSchoolPhone').value,
+                email: document.getElementById('editSchoolEmail').value
+            };
+            localStorage.setItem('schoolInfo', JSON.stringify(school));
+            closeModal('editSchoolModal');
+            loadSchoolData();
+            addActivity('Maktab ma\'lumotlari yangilandi');
+        }
+
+        // Load admissions data
+        function loadAdmissionsData() {
+            const admissions = JSON.parse(localStorage.getItem('admissions')) || [];
+            
+            // Update stats
+            document.getElementById('newAdmissions').textContent = admissions.filter(a => a.status === 'new').length;
+            document.getElementById('acceptedAdmissions').textContent = admissions.filter(a => a.status === 'accepted').length;
+            document.getElementById('pendingAdmissions').textContent = admissions.filter(a => a.status === 'pending').length;
+            document.getElementById('rejectedAdmissions').textContent = admissions.filter(a => a.status === 'rejected').length;
+            
+            // Load table
+            loadAdmissionsTable('all');
+        }
+
+        // Load admissions table
+        function loadAdmissionsTable(filter) {
+            const admissions = JSON.parse(localStorage.getItem('admissions')) || [];
+            let filtered = admissions;
+            if (filter !== 'all') {
+                filtered = admissions.filter(a => a.status === filter);
+            }
+            
+            let html = '';
+            filtered.forEach(a => {
+                const badgeClass = {
+                    pending: 'badge-warning',
+                    accepted: 'badge-success',
+                    rejected: 'badge-danger',
+                    new: 'badge-info'
+                }[a.status] || 'badge-gray';
+                html += `
+                    <tr>
+                        <td>${a.id}</td>
+                        <td>${a.studentName}</td>
+                        <td>${a.guardian}</td>
+                        <td>${a.phone}</td>
+                        <td>${a.class}</td>
+                        <td><span class="badge ${badgeClass}">${a.status.charAt(0).toUpperCase() + a.status.slice(1)}</span></td>
+                        <td>${a.date}</td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 5px 10px;" onclick="viewAdmission('${a.id}')"><i class="fas fa-eye"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('admissionsTable').innerHTML = html;
+        }
+
+        // Add admission
+        function addAdmission() {
+            const admissions = JSON.parse(localStorage.getItem('admissions')) || [];
+            const newAdmission = {
+                id: '#' + (admissions.length + 1).toString().padStart(5, '0'),
+                studentName: document.getElementById('admissionStudentName').value,
+                guardian: document.getElementById('admissionGuardian').value,
+                phone: document.getElementById('admissionPhone').value,
+                class: document.getElementById('admissionClass').value,
+                status: 'new',
+                date: new Date().toLocaleDateString('uz-UZ')
+            };
+            admissions.push(newAdmission);
+            localStorage.setItem('admissions', JSON.stringify(admissions));
+            closeModal('addAdmissionModal');
+            loadAdmissionsData();
+            addActivity(`Yangi ariza: ${newAdmission.studentName}`);
+        }
+
+        // View admission (demo)
+        function viewAdmission(id) {
+            alert(`Ariza ID: ${id} ko'rish.`);
+        }
+
+        // Load notifications page data
+        function loadNotificationsPageData() {
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            
+            // Update stats
+            document.getElementById('totalNotifications').textContent = notifications.length;
+            document.getElementById('sentNotifications').textContent = notifications.filter(n => n.status === 'sent').length;
+            document.getElementById('pendingNotifications').textContent = notifications.filter(n => n.status === 'pending').length;
+            
+            // Load table
+            loadNotificationsTable();
+        }
+
+        // Load notifications table
+        function loadNotificationsTable(search = '') {
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            const filtered = notifications.filter(n => n.title.toLowerCase().includes(search.toLowerCase()) || n.message.toLowerCase().includes(search.toLowerCase()));
+            
+            let html = '';
+            filtered.forEach(n => {
+                html += `
+                    <tr>
+                        <td>${n.id}</td>
+                        <td>${n.title}</td>
+                        <td>${n.message}</td>
+                        <td>${n.sender}</td>
+                        <td>${n.time}</td>
+                        <td><span class="badge ${n.status === 'sent' ? 'badge-success' : 'badge-warning'}">${n.status}</span></td>
+                        <td>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteNotification(${n.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('notificationsTable').innerHTML = html;
+        }
+
+        // Add notification
+        function addNotification() {
+            const notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+            const newNotification = {
+                id: notifications.length ? Math.max(...notifications.map(n => n.id)) + 1 : 1,
+                title: document.getElementById('notificationTitle').value,
+                message: document.getElementById('notificationMessage').value,
+                type: document.getElementById('notificationType').value,
+                sender: 'Admin',
+                time: new Date().toLocaleString('uz-UZ'),
+                status: 'sent'
+            };
+            notifications.push(newNotification);
+            localStorage.setItem('notifications', JSON.stringify(notifications));
+            closeModal('addNotificationModal');
+            loadNotificationsPageData();
+            addActivity(`Yangi xabarnoma: ${newNotification.title}`);
+        }
+
+        // Delete notification
+        function deleteNotification(id) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+                notifications = notifications.filter(n => n.id !== id);
+                localStorage.setItem('notifications', JSON.stringify(notifications));
+                loadNotificationsPageData();
+                addActivity(`Xabarnoma ID: ${id} o'chirildi`);
+            }
+        }
+
+        // Load accounting data
+        function loadAccountingData() {
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const balance = income - expenses;
+            
+            document.getElementById('totalIncome').textContent = formatCurrency(income);
+            document.getElementById('totalExpenses').textContent = formatCurrency(expenses);
+            document.getElementById('balance').textContent = formatCurrency(balance);
+            
+            // Update chart
+            updateAccountingChart(income, expenses);
+            
+            // Load table
+            loadTransactionsTable();
+        }
+
+       // CSS o'zgaruvchini olish funksiyasi
+function getCSSVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+// Accounting chartni yangilash
+function updateAccountingChart(income, expenses) {
+    const primaryColor = getCSSVar('--primary');
+    const dangerColor = getCSSVar('--danger');
+    const ctx = document.getElementById('accountingChart').getContext('2d');
+
+    // Agar eski chart mavjud bo‘lsa, uni o‘chiradi
+    if (window.accountingChart) window.accountingChart.destroy();
+
+    // Yangi chart yaratish
+    window.accountingChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Daromad', 'Xarajatlar'],
+            datasets: [{
+                data: [income, expenses],
+                backgroundColor: [primaryColor, dangerColor]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + formatCurrency(context.raw);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Tranzaksiyalar jadvalini yuklash
+function loadTransactionsTable() {
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+    let html = '';
+    transactions.forEach(t => {
+        html += `
+            <tr>
+                <td>${t.id}</td>
+                <td>${t.type === 'income' ? 'Daromad' : 'Xarajat'}</td>
+                <td>${formatCurrency(t.amount)}</td>
+                <td>${t.description}</td>
+                <td>${t.date}</td>
+                <td>
+                    <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteTransaction(${t.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    document.getElementById('transactionsTable').innerHTML = html;
+}
+
+// Yangi tranzaksiya qo‘shish
+function addTransaction() {
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+    const newTransaction = {
+        id: transactions.length ? Math.max(...transactions.map(t => t.id)) + 1 : 1,
+        type: document.getElementById('transactionType').value,
+        amount: parseInt(document.getElementById('transactionAmount').value),
+        description: document.getElementById('transactionDescription').value,
+        date: new Date().toISOString().split('T')[0]
+    };
+
+    transactions.push(newTransaction);
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+
+    closeModal('addTransactionModal');
+    loadAccountingData();
+    addActivity(`Yangi operatsiya: ${newTransaction.description}`);
+}
+
+// Tranzaksiyani o‘chirish
+function deleteTransaction(id) {
+    if (confirm("Ushbu tranzaksiyani o'chirishni istaysizmi?")) {
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        transactions = transactions.filter(t => t.id !== id);
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+        loadAccountingData();
+        addActivity(`Tranzaksiya ID: ${id} o‘chirildi`);
+    }
+}
+
+// Hisob-kitob ma’lumotlarini yuklash
+function loadAccountingData() {
+    const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    let totalIncome = 0;
+    let totalExpenses = 0;
+
+    transactions.forEach(t => {
+        if (t.type === 'income') totalIncome += t.amount;
+        else totalExpenses += t.amount;
+    });
+
+    document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+    document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
+
+    updateAccountingChart(totalIncome, totalExpenses);
+    loadTransactionsTable();
+}
+
+
+        // Delete transaction
+        function deleteTransaction(id) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                transactions = transactions.filter(t => t.id !== id);
+                localStorage.setItem('transactions', JSON.stringify(transactions));
+                loadAccountingData();
+                addActivity(`Operatsiya ID: ${id} o'chirildi`);
+            }
+        }
+
+        // Generate accounting report
+        function generateAccountingReport() {
+            const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+            const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            alert(`Hisobot:\nDaromad: ${formatCurrency(income)}\nXarajatlar: ${formatCurrency(expenses)}\nBalans: ${formatCurrency(income - expenses)}`);
+        }
+
+        // Load billing data
+        function loadBillingData() {
+            const billing = JSON.parse(localStorage.getItem('billing')) || [];
+            
+            // Update stats
+            document.getElementById('totalContracts').textContent = billing.length;
+            document.getElementById('paidBills').textContent = billing.filter(b => b.status === 'paid').length;
+            document.getElementById('overdueBills').textContent = billing.filter(b => b.status === 'overdue').length;
+            
+            // Load table
+            loadBillingTable();
+        }
+
+        // Load billing table
+        function loadBillingTable(search = '') {
+            const billing = JSON.parse(localStorage.getItem('billing')) || [];
+            const filtered = billing.filter(b => b.student.toLowerCase().includes(search.toLowerCase()));
+            
+            let html = '';
+            filtered.forEach(b => {
+                const badgeClass = {
+                    paid: 'badge-success',
+                    overdue: 'badge-warning',
+                    pending: 'badge-info'
+                }[b.status] || 'badge-gray';
+                html += `
+                    <tr>
+                        <td>${b.id}</td>
+                        <td>${b.student}</td>
+                        <td>${formatCurrency(b.amount)}</td>
+                        <td>${b.dueDate}</td>
+                        <td><span class="badge ${badgeClass}">${b.status}</span></td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 5px 10px;" onclick="markPaid(${b.id})"><i class="fas fa-check"></i></button>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteBilling(${b.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('billingTable').innerHTML = html;
+        }
+
+        // Add billing
+        function addBilling() {
+            const billing = JSON.parse(localStorage.getItem('billing')) || [];
+            const newBilling = {
+                id: billing.length ? Math.max(...billing.map(b => b.id)) + 1 : 1,
+                student: document.getElementById('billingStudent').value,
+                amount: parseInt(document.getElementById('billingAmount').value),
+                dueDate: document.getElementById('billingDueDate').value,
+                status: 'pending'
+            };
+            billing.push(newBilling);
+            localStorage.setItem('billing', JSON.stringify(billing));
+            closeModal('addBillingModal');
+            loadBillingData();
+            addActivity(`Yangi shartnoma: ${newBilling.student}`);
+        }
+
+        // Mark as paid
+        function markPaid(id) {
+            let billing = JSON.parse(localStorage.getItem('billing')) || [];
+            const item = billing.find(b => b.id === id);
+            if (item) {
+                item.status = 'paid';
+                localStorage.setItem('billing', JSON.stringify(billing));
+                loadBillingData();
+                addActivity(`To'lov tasdiqlandi ID: ${id}`);
+            }
+        }
+
+        // Delete billing
+        function deleteBilling(id) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let billing = JSON.parse(localStorage.getItem('billing')) || [];
+                billing = billing.filter(b => b.id !== id);
+                localStorage.setItem('billing', JSON.stringify(billing));
+                loadBillingData();
+                addActivity(`Shartnoma ID: ${id} o'chirildi`);
+            }
+        }
+
+        // Load HR data
+        function loadHRData() {
+            const employees = JSON.parse(localStorage.getItem('employees')) || [];
+            
+            // Update stats
+            document.getElementById('totalEmployees').textContent = employees.length;
+            document.getElementById('activeEmployees').textContent = employees.filter(e => e.status === 'active').length;
+            document.getElementById('onLeaveEmployees').textContent = employees.filter(e => e.status === 'onleave').length;
+            
+            // Load table
+            loadEmployeesTable();
+        }
+
+        // Load employees table
+        function loadEmployeesTable(search = '') {
+            const employees = JSON.parse(localStorage.getItem('employees')) || [];
+            const filtered = employees.filter(e => e.name.toLowerCase().includes(search.toLowerCase()));
+            
+            let html = '';
+            filtered.forEach(e => {
+                html += `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.name}</td>
+                        <td>${e.position}</td>
+                        <td>${e.phone}</td>
+                        <td><span class="badge ${e.status === 'active' ? 'badge-success' : 'badge-warning'}">${e.status === 'active' ? 'Faol' : 'Ta\'tilda'}</span></td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 5px 10px; margin-right: 5px;" onclick="editEmployee(${e.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteEmployee(${e.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('employeesTable').innerHTML = html;
+        }
+
+        // Add employee
+        function addEmployee() {
+            const employees = JSON.parse(localStorage.getItem('employees')) || [];
+            const newEmployee = {
+                id: employees.length ? Math.max(...employees.map(e => e.id)) + 1 : 1,
+                name: document.getElementById('employeeName').value,
+                position: document.getElementById('employeePosition').value,
+                phone: document.getElementById('employeePhone').value,
+                status: 'active'
+            };
+            employees.push(newEmployee);
+            localStorage.setItem('employees', JSON.stringify(employees));
+            closeModal('addEmployeeModal');
+            loadHRData();
+            addActivity(`Yangi xodim: ${newEmployee.name}`);
+        }
+
+        // Edit employee (demo)
+        function editEmployee(id) {
+            alert(`Xodim ID: ${id} tahrirlash.`);
+        }
+
+        // Delete employee
+        function deleteEmployee(id) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let employees = JSON.parse(localStorage.getItem('employees')) || [];
+                employees = employees.filter(e => e.id !== id);
+                localStorage.setItem('employees', JSON.stringify(employees));
+                loadHRData();
+                addActivity(`Xodim ID: ${id} o'chirildi`);
+            }
+        }
+
+        // Load LMS data
+        function loadLMSData() {
+            const lessons = JSON.parse(localStorage.getItem('lessons')) || [];
+            
+            // Update stats
+            document.getElementById('totalLessons').textContent = lessons.length;
+            document.getElementById('onlineLessons').textContent = lessons.filter(l => l.type === 'online').length;
+            document.getElementById('assignments').textContent = Math.floor(Math.random() * 10) + 5; // Demo
+            
+            // Load table
+            loadLMSTable();
+        }
+
+        // Load LMS table
+        function loadLMSTable() {
+            const lessons = JSON.parse(localStorage.getItem('lessons')) || [];
+            
+            let html = '';
+            lessons.forEach(l => {
+                html += `
+                    <tr>
+                        <td>${l.time}</td>
+                        <td>${l.subject}</td>
+                        <td>${l.teacher}</td>
+                        <td>${l.class}</td>
+                        <td>${l.type}</td>
+                        <td>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteLesson('${l.time}')"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('lmsTable').innerHTML = html;
+        }
+
+        // Add lesson
+        function addLesson() {
+            const lessons = JSON.parse(localStorage.getItem('lessons')) || [];
+            const newLesson = {
+                time: document.getElementById('lessonTime').value,
+                subject: document.getElementById('lessonSubject').value,
+                teacher: document.getElementById('lessonTeacher').value,
+                class: document.getElementById('lessonClass').value,
+                room: 'N/A',
+                type: document.getElementById('lessonType').value
+            };
+            lessons.push(newLesson);
+            localStorage.setItem('lessons', JSON.stringify(lessons));
+            closeModal('addLessonModal');
+            loadLMSData();
+            addActivity(`Yangi dars: ${newLesson.subject}`);
+        }
+
+        // Delete lesson
+        function deleteLesson(time) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let lessons = JSON.parse(localStorage.getItem('lessons')) || [];
+                lessons = lessons.filter(l => l.time !== time);
+                localStorage.setItem('lessons', JSON.stringify(lessons));
+                loadLMSData();
+                addActivity(`Dars o'chirildi: ${time}`);
+            }
+        }
+
+        // Load exams data
+        function loadExamsData() {
+            const exams = JSON.parse(localStorage.getItem('exams')) || [];
+            
+            // Update stats
+            document.getElementById('totalExams').textContent = exams.length;
+            document.getElementById('completedExams').textContent = exams.filter(e => e.status === 'completed').length;
+            document.getElementById('upcomingExams').textContent = exams.filter(e => e.status === 'upcoming').length;
+            
+            // Load table
+            loadExamsTable();
+        }
+
+        // Load exams table
+        function loadExamsTable(search = '') {
+            const exams = JSON.parse(localStorage.getItem('exams')) || [];
+            const filtered = exams.filter(e => e.subject.toLowerCase().includes(search.toLowerCase()));
+            
+            let html = '';
+            filtered.forEach(e => {
+                html += `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.subject}</td>
+                        <td>${e.date}</td>
+                        <td>${e.class}</td>
+                        <td><span class="badge ${e.status === 'completed' ? 'badge-success' : 'badge-warning'}">${e.status}</span></td>
+                        <td>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteExam(${e.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('examsTable').innerHTML = html;
+        }
+
+        // Add exam
+        function addExam() {
+            const exams = JSON.parse(localStorage.getItem('exams')) || [];
+            const newExam = {
+                id: exams.length ? Math.max(...exams.map(e => e.id)) + 1 : 1,
+                subject: document.getElementById('examSubject').value,
+                date: document.getElementById('examDate').value,
+                class: document.getElementById('examClass').value,
+                status: 'upcoming'
+            };
+            exams.push(newExam);
+            localStorage.setItem('exams', JSON.stringify(exams));
+            closeModal('addExamModal');
+            loadExamsData();
+            addActivity(`Yangi imtihon: ${newExam.subject}`);
+        }
+
+        // Delete exam
+        function deleteExam(id) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let exams = JSON.parse(localStorage.getItem('exams')) || [];
+                exams = exams.filter(e => e.id !== id);
+                localStorage.setItem('exams', JSON.stringify(exams));
+                loadExamsData();
+                addActivity(`Imtihon ID: ${id} o'chirildi`);
+            }
+        }
+
+        // Load courses data
+        function loadCoursesData() {
+            const courses = JSON.parse(localStorage.getItem('courses')) || [];
+            
+            // Update stats
+            document.getElementById('totalCourses').textContent = courses.length;
+            document.getElementById('enrolledStudents').textContent = courses.reduce((sum, c) => sum + c.students, 0);
+            document.getElementById('courseTeachers').textContent = new Set(courses.map(c => c.teacher)).size;
+            
+            // Load table
+            loadCoursesTable();
+        }
+
+        // Load courses table
+        function loadCoursesTable(search = '') {
+            const courses = JSON.parse(localStorage.getItem('courses')) || [];
+            const filtered = courses.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+            
+            let html = '';
+            filtered.forEach(c => {
+                html += `
+                    <tr>
+                        <td>${c.id}</td>
+                        <td>${c.name}</td>
+                        <td>${c.teacher}</td>
+                        <td>${c.students}</td>
+                        <td><span class="badge badge-success">${c.status}</span></td>
+                        <td>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteCourse(${c.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('coursesTable').innerHTML = html;
+        }
+
+        // Add course
+        function addCourse() {
+            const courses = JSON.parse(localStorage.getItem('courses')) || [];
+            const newCourse = {
+                id: courses.length ? Math.max(...courses.map(c => c.id)) + 1 : 1,
+                name: document.getElementById('courseName').value,
+                teacher: document.getElementById('courseTeacher').value,
+                students: 0,
+                status: 'active'
+            };
+            courses.push(newCourse);
+            localStorage.setItem('courses', JSON.stringify(courses));
+            closeModal('addCourseModal');
+            loadCoursesData();
+            addActivity(`Yangi kurs: ${newCourse.name}`);
+        }
+
+        // Delete course
+        function deleteCourse(id) {
+            if (confirm('Ochirishni tasdiqlaysizmi?')) {
+                let courses = JSON.parse(localStorage.getItem('courses')) || [];
+                courses = courses.filter(c => c.id !== id);
+                localStorage.setItem('courses', JSON.stringify(courses));
+                loadCoursesData();
+                addActivity(`Kurs ID: ${id} o'chirildi`);
+            }
+        }
+
+        // Load parents data
+        function loadParentsData() {
+            const parents = JSON.parse(localStorage.getItem('parents')) || [];
+            const messages = JSON.parse(localStorage.getItem('messages')) || [];
+            
+            // Update stats
+            document.getElementById('totalParents').textContent = parents.length;
+            document.getElementById('messagesSent').textContent = messages.length;
+            document.getElementById('unreadMessages').textContent = messages.filter(m => m.status === 'unread').length;
+            
+            // Load table
+            loadParentsTable();
+        }
+
+        // Load parents table
+        function loadParentsTable(search = '') {
+            const parents = JSON.parse(localStorage.getItem('parents')) || [];
+            const filtered = parents.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+            
+            let html = '';
+            filtered.forEach(p => {
+                html += `
+                    <tr>
+                        <td>${p.id}</td>
+                        <td>${p.name}</td>
+                        <td>${p.student}</td>
+                        <td>${p.phone}</td>
+                        <td>${p.email}</td>
+                        <td>
+                            <button class="btn btn-primary" style="padding: 5px 10px;" onclick="viewMessages(${p.id})"><i class="fas fa-envelope"></i></button>
+                            <button class="btn btn-danger" style="padding: 5px 10px;" onclick="deleteParent(${p.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('parentsTable').innerHTML = html;
+        }
+
+   // Ranglarni olish uchun yordamchi funksiya
+function getCSSVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+// Xabar yuborish
+function sendMessage() {
+    const messages = JSON.parse(localStorage.getItem('messages')) || [];
+    const newMessage = {
+        id: messages.length ? Math.max(...messages.map(m => m.id)) + 1 : 1,
+        recipient: parseInt(document.getElementById('messageRecipient').value),
+        title: document.getElementById('messageTitle').value,
+        content: document.getElementById('messageContent').value,
+        date: new Date().toLocaleDateString('uz-UZ'),
+        status: 'unread'
+    };
+    messages.push(newMessage);
+    localStorage.setItem('messages', JSON.stringify(messages));
+    closeModal('sendMessageModal');
+    loadParentsData();
+    addActivity(`Xabar yuborildi ID: ${newMessage.recipient}`);
+}
+
+// Xabarlarni ko‘rish
+function viewMessages(id) {
+    const messages = JSON.parse(localStorage.getItem('messages')) || [];
+    const parentMessages = messages.filter(m => m.recipient === id);
+    alert(`Ota-ona ID: ${id} xabarlari: ${parentMessages.length}`);
+}
+
+// Ota-onani o‘chirish
+function deleteParent(id) {
+    if (confirm('Ochirishni tasdiqlaysizmi?')) {
+        let parents = JSON.parse(localStorage.getItem('parents')) || [];
+        parents = parents.filter(p => p.id !== id);
+        localStorage.setItem('parents', JSON.stringify(parents));
+
+        let messages = JSON.parse(localStorage.getItem('messages')) || [];
+        messages = messages.filter(m => m.recipient !== id);
+        localStorage.setItem('messages', JSON.stringify(messages));
+
+        loadParentsData();
+        addActivity(`Ota-ona ID: ${id} o'chirildi`);
+    }
+}
+
+// Sozlamalarni yuklash
+function loadSettingsData() {
+    const settings = JSON.parse(localStorage.getItem('settings')) || sampleData.settings;
+    document.getElementById('systemName').value = settings.systemName;
+    document.getElementById('language').value = settings.language;
+    document.getElementById('timezone').value = settings.timezone;
+}
+
+// Sozlamalarni saqlash
+function saveSettings() {
+    const settings = {
+        systemName: document.getElementById('systemName').value,
+        language: document.getElementById('language').value,
+        timezone: document.getElementById('timezone').value
+    };
+
+    const newPass = document.getElementById('newPassword').value;
+    if (newPass && newPass === document.getElementById('confirmPassword').value) {
+        alert('Parol yangilandi (demo)');
+    } else if (newPass) {
+        alert('Parollar mos kelmaydi');
+        return;
+    }
+
+    localStorage.setItem('settings', JSON.stringify(settings));
+    alert('Sozlamalar saqlandi');
+    addActivity('Sozlamalar yangilandi');
+}
+
+// Diagrammalarni ishga tushirish
+function initializeCharts() {
+    const primaryColor = getCSSVar('--primary');
+    const successColor = getCSSVar('--success');
+    const warningColor = getCSSVar('--warning');
+
+    // O‘quvchilar diagrammasi
+    const studentsCtx = document.getElementById('studentsChart').getContext('2d');
+    window.studentsChart = new Chart(studentsCtx, {
+        type: 'line',
+        data: {
+            labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun'],
+            datasets: [{
+                label: "O'quvchilar soni",
+                data: [120, 135, 140, 145, 150, 155],
+                borderColor: primaryColor,
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // To‘lovlar diagrammasi
+    const paymentsCtx = document.getElementById('paymentsChart').getContext('2d');
+    window.paymentsChart = new Chart(paymentsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ["To'langan", 'Kutilmoqda'],
+            datasets: [{
+                data: [9850000, 2600000],
+                backgroundColor: [successColor, warningColor],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + formatCurrency(context.raw);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+        // Update charts
+        function updateCharts(range) {
+            let labels, data;
+            if (range === 'week') {
+                labels = ['Dush', 'Sesh', 'Chor', 'Pay', 'Jum', 'Shan', 'Yak'];
+                data = [150, 152, 151, 153, 154, 155, 155];
+            } else if (range === 'month') {
+                labels = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun'];
+                data = [120, 135, 140, 145, 150, 155];
+            } else {
+                labels = ['2019', '2020', '2021', '2022', '2023'];
+                data = [100, 110, 125, 140, 155];
+            }
+            window.studentsChart.data.labels = labels;
+            window.studentsChart.data.datasets[0].data = data;
+            window.studentsChart.update();
+        }
+
+        // Initialize calendar
+        function initializeCalendar() {
+            const now = new Date();
+            renderCalendar(now.getFullYear(), now.getMonth());
+        }
+
+        // Render calendar
+        function renderCalendar(year, month) {
+            const calendarEl = document.getElementById('calendar');
+            const firstDay = new Date(year, month, 1).getDay();
+            const lastDate = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            const monthNames = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
+            
+            let html = `<div class="calendar-header">${monthNames[month]} ${year}</div>`;
+            
+            // Day headers
+            ['Du', 'Se', 'Cho', 'Pa', 'Ju', 'Sha', 'Ya'].forEach(day => {
+                html += `<div class="calendar-day" style="font-weight: bold;">${day}</div>`;
+            });
+            
+            // Empty days
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="calendar-day other-month"></div>`;
+            }
+            
+            // Days
+            for (let day = 1; day <= lastDate; day++) {
+                let className = 'calendar-day';
+                if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) className += ' today';
+                if (Math.random() > 0.7) className += ' event'; // Random events
+                html += `<div class="${className}">${day}</div>`;
+            }
+            
+            calendarEl.innerHTML = html;
+            calendarEl.dataset.year = year;
+            calendarEl.dataset.month = month;
+        }
+
+        // Navigate calendar
+        function navigateCalendar(delta) {
+            const calendarEl = document.getElementById('calendar');
+            let year = parseInt(calendarEl.dataset.year);
+            let month = parseInt(calendarEl.dataset.month) + delta;
+            if (month < 0) { month = 11; year--; }
+            if (month > 11) { month = 0; year++; }
+            renderCalendar(year, month);
+        }
+
+        // Show page
+        function showPage(page) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(page + 'Page').classList.add('active');
+            
+            const titles = {
+                dashboard: "Boshqaruv paneli",
+                users: "Foydalanuvchi boshqaruvi",
+                schools: "Maktab ma'lumotlari",
+                admission: "Qabul va ro'yxatdan o'tish",
+                notifications: "Xabarnomalar",
+                accounting: "Buxgalteriya",
+                billing: "Shartnoma va to'lovlar",
+                hr: "Kadrlar boshqaruvi",
+                lms: "Dars jarayoni (LMS)",
+                exams: "Imtihonlar",
+                courses: "To'garaklar va kurslar",
+                parents: "Ota-onalar bilan aloqa",
+                settings: "Sozlamalar"
+            };
+            document.getElementById('currentPageTitle').textContent = titles[page];
+            
+            // Load data
+            const loaders = {
+                dashboard: loadDashboardData,
+                users: loadUsersData,
+                schools: loadSchoolData,
+                admission: loadAdmissionsData,
+                notifications: loadNotificationsPageData,
+                accounting: loadAccountingData,
+                billing: loadBillingData,
+                hr: loadHRData,
+                lms: loadLMSData,
+                exams: loadExamsData,
+                courses: loadCoursesData,
+                parents: loadParentsData,
+                settings: loadSettingsData
+            };
+            if (loaders[page]) loaders[page]();
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('uz-UZ', { style: 'currency', currency: 'UZS', minimumFractionDigits: 0 }).format(amount);
+        }
+
+        // Generate report
+        function generateReport() {
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+            const teachers = JSON.parse(localStorage.getItem('teachers')) || [];
+            const payments = JSON.parse(localStorage.getItem('payments')) || {};
+            alert(`Hisobot:\nO'quvchilar: ${students.length}\nO'qituvchilar: ${teachers.length}\nTo'lovlar: ${formatCurrency(payments.total)}`);
+        }
+
+        // Add activity
+        function addActivity(action) {
+            const activities = JSON.parse(localStorage.getItem('activities')) || [];
+            const newActivity = {
+                user: 'Admin User',
+                action: action,
+                time: new Date().toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' }),
+                status: 'success'
+            };
+            activities.unshift(newActivity);
+            if (activities.length > 10) activities.pop();
+            localStorage.setItem('activities', JSON.stringify(activities));
+            if (document.getElementById('dashboardPage').classList.contains('active')) {
+                loadActivityData();
+            }
+        }
+
+        // Open modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal on outside clic
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
